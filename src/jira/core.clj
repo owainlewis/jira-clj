@@ -13,7 +13,7 @@
   (let [endpoint (System/getenv "JIRA_ENDPOINT")
         username (System/getenv "JIRA_USERNAME")
         password (System/getenv "JIRA_PASSWORD")]
-    {:endpoint endpoint :auth [username password]})
+    {:endpoint endpoint :auth [username password]}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; OAS Parsing (Dynamic Client Generation)
