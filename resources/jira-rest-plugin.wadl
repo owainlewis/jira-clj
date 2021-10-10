@@ -1,0 +1,61 @@
+Executing change to migrate limits into Terraform (manage existing resources in Terraform) 
+
+We require state edits when making these changes 
+
+The instructions for the CM were taken from a word document handed over from the team that made the change 
+
+CM had been reviewed by the team who made the code changes
+
+There was a mistake in one of the instruction steps in the CM to import a global rather than a regional limit (api-gateway-console-whitelist) which controls whether the console is enabled in a region. 
+
+We were updating the default values of this limit and that causes the limit to be recreated (deleted and then created) in Shepherd. So the limits provider doesn't allow you to update default options (deletes and then updates). We have cut a ticket with limits to ask for this behaviour to be changed. 
+
+Because we had imported global limits and the release was trying 
+
+The delete succeeded and the recreate failed because you aren't able to create a regional limit without there being a global limit. 
+
+The mistake was importing a global limit at a regional level. This meant that the limit couldn't be created at a regional level because the global flag had been deleted. 
+
+Why wasn't this caught in testing? 
+
+Because we are manually importing resources, and the state of resources in spectre is not consistent across regions and realms. (This is the purpose of the work - to move into Shepherd and make things consistent). 
+
+A US gov operator added the global limit back in via Spectre which restored service. 
+
+
+
+
+Names 
+
+Rik 
+Med
+Sachin
+Lizzie
+Saurabh
+Robert
+Sudhanshu 
+Veera (OKE)
+
+Engineers (Leads)
+Paul Hilliar
+Ben
+Maddie
+Kris
+Kyle
+Simon
+Anurag
+
+
+
+Stefan Klas 
+
+There are some 
+
+Andrea
+Sam Lloyd
+Jacob 
+Stefan Klass
+Andrew
+Charlie
+James Darley
+Kiran Joshy 
