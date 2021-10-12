@@ -23,13 +23,8 @@
   (let [{path :path method :method id :id description :description} resource]
     (str "(defn " id "\n" description "\n[config & [opts]]\n(jira-request config method))\n")))
 
-(defn build-structure [path m]
-  (for [[k v] m :when (= k :get)]
-    {:path path
-     :method k
-     :id (get v :operationId)}))
-
-(defn parse-oas-resource [resource]
+(defn parse-oas-resource 
+  [resource]
   (let [[x & xs] resource path (name x)]
     (mapcat
      (fn [m]
