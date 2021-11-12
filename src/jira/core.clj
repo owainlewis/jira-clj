@@ -1,8 +1,7 @@
 (ns jira.core
-  (:require [clojure.java.io :as io]
-            [cheshire.core :as json]
-            [clojure.string :as s]
-            [clj-http.client :as http]))
+  (:require
+   [cheshire.core :as json]
+   [clj-http.client :as http]))
 
 ;; API for Atlassian JIRA
 ;; For full API docs see https://developer.atlassian.com/server/jira/platform/rest-apis/
@@ -15,51 +14,6 @@
         username (System/getenv "JIRA_USERNAME")
         password (System/getenv "JIRA_PASSWORD")]
     {:endpoint endpoint :auth [username password]}))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; OAS Parsing (Dynamic Client Generation)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn camel->snake [x]
-  (let [parts (s/split x #"(?=[A-Z])")]
-    (s/join "-" (map s/lower-case parts))))
-
-(defn render
-  [resource]
-  (let [{path :path method :method id :id description :description} resource]
-    (str "(defn " (camel->snake id)
-         "\n\"" (s/replace (or description "") "\"" "'") "\"\n[config & [opts]]\n(jira-request config " method "))\n")))
-
-(defn parse-oas-resource
-  [resource]
-  (let [[x & xs] resource path (name x)]
-    (mapcat
-     (fn [m]
-       (for [[k v] m :when (= k :get)]
-         {:path path
-          :method k
-          :description (get v :description)
-          :id (get v :operationId)}))
-     xs)))
-
-(defn parse-oas []
-  (if-let [resources (-> (slurp "resources/swagger.json")
-                         (json/parse-string true))]
-    (into []
-          (mapcat parse-oas-resource
-                  (:paths resources)))))
-
-(defn get-resource-paths-for [path]
-  (let [oas (parse-oas)]
-    (filter
-     (fn [x]
-       (.startsWith (:path x) path)) oas)))
-
-(defn generate []
-  (let [result (get-resource-paths-for "issue/")]
-    (do
-      (for [v result]
-        (spit "src/jira/issues.clj" (render v) :append true)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Client HTTP requests

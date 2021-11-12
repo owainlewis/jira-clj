@@ -1,43 +1,53 @@
+(ns jira.issues
+  (:require [jira.core :refer [jira-request]]))
 (defn get-edit-issue-meta
   "Returns the meta data for editing an issue.
  <p/>
  The fields in the editmeta correspond to the fields in the edit screen for the issue.
  Fields not in the screen will not be in the editmeta."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/editmeta" opts))
+
 (defn get-issue-watchers
   "Returns the list of watchers for the issue with the given key."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/watchers" opts))
+
 (defn get-votes
   "A REST sub-resource representing the voters on the issue."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/votes" opts))
+
 (defn get-sub-tasks
   "Returns an issue's subtask list"
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/subtask" opts))
+
 (defn get-comments
   "Returns all comments for an issue.
  <p>
  Results can be ordered by the 'created' field which means the date a comment was added.
  </p>"
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/comment" opts))
+
 (defn get-properties-keys
   "Returns the keys of all properties for the issue identified by the key or by the id."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/properties" opts))
+
 (defn get-property
   "Returns the value of the property with a given key from the issue identified by the key or by the id. The user who retrieves
  the property is required to have permissions to read the issue."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/properties/{propertyKey}" opts))
+
 (defn get-issue-worklog
   "Returns all work logs for an issue. <br/>
  <strong>Note:</strong> Work logs won't be returned if the Log work field is hidden for the project."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/worklog" opts))
+
 (defn get-create-issue-meta
   "Returns the meta data for creating issues. This includes the available projects, issue types and fields,
  including field types and whether or not those fields are required.
@@ -50,23 +60,28 @@
  <p/>
  The results can be filtered by project and/or issue type, given by the query params."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/createmeta" opts))
+
 (defn get-create-issue-meta-fields
   ""
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/createmeta/{projectIdOrKey}/issuetypes/{issueTypeId}" opts))
+
 (defn get-remote-issue-links
   "A REST sub-resource representing the remote issue links on the issue."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/remotelink" opts))
+
 (defn get-create-issue-meta-project-issue-types
   ""
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/createmeta/{projectIdOrKey}/issuetypes" opts))
+
 (defn can-move-sub-task
   ""
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/subtask/move" opts))
+
 (defn get-transitions
   "Get a list of the transitions possible for this issue by the current user, along with fields that are required and their types.
  <p/>
@@ -75,16 +90,19 @@
  The fields in the metadata correspond to the fields in the transition screen for that transition.
  Fields not in the screen will not be in the metadata."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/transitions" opts))
+
 (defn get-worklog
   "Returns a specific worklog. <br/>
  <strong>Note:</strong> The work log won't be returned if the Log work field is hidden for the project."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/worklog/{id}" opts))
+
 (defn get-comment
   "Returns a single comment."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/comment/{id}" opts))
+
 (defn get-issue
   "Returns a full representation of the issue for the given issue key.
  <p>
@@ -139,13 +157,15 @@
  After including <code>versionedRepresentations</code> 'fields' field become hidden.</li>
  </ul>"
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}" opts))
+
 (defn get-remote-issue-link-by-id
   "Get the remote issue link with the given id on the issue."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/{issueIdOrKey}/remotelink/{linkId}" opts))
+
 (defn get-issue-picker-resource
   "Returns suggested issues which match the auto-completion query for the user which executes this request. This REST
  method will check the user's history and the user's browsing context and select this issues, which match the query."
   [config & [opts]]
-  (jira-request config :get))
+  (jira-request config :get "api" "issue/picker" opts))
