@@ -1,6 +1,7 @@
 (ns jira.core
   (:require [clojure.java.io :as io]
             [cheshire.core :as json]
+            [clojure.string :as s]
             [clj-http.client :as http]))
 
 ;; API for Atlassian JIRA
@@ -19,11 +20,17 @@
 ;;; OAS Parsing (Dynamic Client Generation)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn render [resource]
-  (let [{path :path method :method id :id description :description} resource]
-    (str "(defn " id "\n" description "\n[config & [opts]]\n(jira-request config method))\n")))
+(defn camel->snake [x]
+  (let [parts (s/split x #"(?=[A-Z])")]
+    (s/join "-" (map s/lower-case parts))))
 
-(defn parse-oas-resource 
+(defn render
+  [resource]
+  (let [{path :path method :method id :id description :description} resource]
+    (str "(defn " (camel->snake id)
+         "\n\"" (s/replace (or description "") "\"" "'") "\"\n[config & [opts]]\n(jira-request config " method "))\n")))
+
+(defn parse-oas-resource
   [resource]
   (let [[x & xs] resource path (name x)]
     (mapcat
@@ -42,10 +49,17 @@
           (mapcat parse-oas-resource
                   (:paths resources)))))
 
+(defn get-resource-paths-for [path]
+  (let [oas (parse-oas)]
+    (filter
+     (fn [x]
+       (.startsWith (:path x) path)) oas)))
+
 (defn generate []
-  (let [result (parse-oas)]
-    (for [v result]
-      (spit "output.clj" (render v) :append true))))
+  (let [result (get-resource-paths-for "issue/")]
+    (do
+      (for [v result]
+        (spit "src/jira/issues.clj" (render v) :append true)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Client HTTP requests
